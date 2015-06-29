@@ -1,0 +1,111 @@
+<html>
+<head>
+<title>MMU article draft</title>
+</head>
+<body>
+<h1 align="center"><b>THE MMU</b></h1><br>
+<p align="justify"><b>
+Some years back ,while i was reading a quite recent book in operating system development,
+i found some information about memory management in operating system design and how its
+done out there with some specific operating systems,being it hobby or professionnal.
+I read something like "...the kernel is loaded in the upper 4GB of address space".
+I also saw weird memory addresses wich were 32 bits.At that time,i knew that most computers
+could have a maximum of 512 Mb of memory onboard.I thus asked myself:How it possible
+to access memory above the gigabyte when you only have say 128Mb onboard.Weird thing with yet,
+a simple answer:the MMU is the guy behind this "Mafia".
+<br>
+<p align="justify">
+The MMU stands for Memory Management Unit,also sometimes called Paged Memory Management Unit.
+It is  computer hardware component responsible for memory access handling by the CPU.
+Its function depends on the type is system and type of CPU:
+<ul>
+<li>Virtual to physical address translation (virtual memory management)<br>This will usually be found on
+big cpus such as i386 based processors and others.</li>
+<li>Memory Protection</li>
+<li>Cache Control /Bus Arbitration.<br>
+This will be found on cpus having a cache for cache control and bus arbitration will be found in multiprocessor systems
+or single processors with multicore.That is when cpu cores share the same physical memory package.
+</li>
+<li>
+Bank switching ,that you will usually find in small 8 bit microprocessor systems such as the NES( i wrote an emulator for it).
+</li>
+<br>
+</ul>
+The mmu can reside in the same IC package as the CPU (thats the case is major 32 bit cpus)
+or could be external to the CPU IC package.
+</p>
+<p align="justify">
+As the major and most important in our context use for the MMU is for virtual memory management,well will not disgress further in
+its other uses and concentrate on the topic.<br>
+To achieve its goal of address translation,the MMU divides the address (virtual) in little fields that will permit the location of
+data in memory.The entire virtual address space is divided in little chuncks of memory called pages.
+For those who are lost,a virtual address is the address the cpu 'sees and sends' to the MMU.The mmu will then translate this in a physical
+memory address.This is depicted in the figure below.<br>
+
+ <center> <img src="images/cpu_mmu.jpg" alt="place picture of mmu /cpu interface here"></center>
+<br>
+As said above ,the linear  address space is divided in little field.The upper bits are used to point to a page
+ an offset in a page.<br>
+ <center><img src="images/paging_mechanism.jpg" alt="this is the layout for page setup"></center>
+ <br>
+ Each page directory is an array of page directory entries.Each directory entry contains the base physical address
+ of a page table,i.e the physical start address of the page directory.It also contains attributes of the page table,the
+ most commons being a flag to indicate if the page is present in memory,read only,system or user page table.
+ <br><center><img src="images/pde_structure.jpg" alt="page directory entry"></center><br>
+ The page table is an array of page table entries.Each page table entry contains the base address of a table,that is the
+ address (physical) of the first byte of a table.Also,it contains attributes that are quite similar to the ones in the
+ page directory entries.
+ <br><center><img src="images/pte_structure.jpg" alt="page table entry"></center><br>
+ So to resume,the page directory contains contains entries that tells us where the page tables of a programm are located in main memory,
+ the page table tells us where the pages uses by this program are located in memory.All of this excluding their properties such as
+ the page being present in main memory or not and others.
+ The main purpose for keeping track of which pages are not in main memory is to simulate the existence of much more physical memory than
+ whats present on the system.When the CPU tries to access a memory location in a page thats not in main memory,the MMU will generate a
+ page fault.A page fault is an exception indicating that a page is not present in main memory.
+ So a system with 128 Mb of ram could use this mechanism to increase its memory capacity to say 1GB if we suppose there is a secondary storage device such as a harddisk which can provide us with 1Gb-128Mb of disk space.When a page fault occurs,the CPU invokes a programmer defined routine
+usually called the page fault handler that does the necessary routines to bring the missing page in main memory,by say sending and unused page in
+secondary memory.The operation of moving an unused page to secondary memory is called swapping,and the file where the unused pages are stored is usually called the pagefile of swapfile.
+I willl take here a concrete example of how all of this works.Some people with some experience will sort out that my system is feasible,
+but non economic.My hypothetical system will consist of a cpu weith a mmu.The cpu will have a 16 bit address bus(yeah too small so non economic as i said above,just for simplicity).This address will be divided as follows :
+<ul>
+<li>The directory field will be 4 bit wide so will have a max of 16 entriees.</li>
+<li>The Table field will also be 4 bits,so 16 entries max also.</li>
+<li>The offset field is 8 bits wide so each page will have 256bytes</li>
+</ul>
+<center><img src="images/example_address.jpg" alt="image of 16 bit adress field"></center>
+<br>
+We will now suppose that the cpu has output address 0xFAAA on its address bus.
+All addresses are in hexadecimal.
+Since the upper 4 bits of the address are used to point to the page directory entry,it will point in this case to entry 0xF,i.e the topmost
+entry in the page directory.
+Lets further suppose that each of the entries in the page directory is of this format.
+<br>
+<center><img src="images/example_pde_structure.jpg" alt="entry structure for example"><br></center>
+Lets again suppose that in our case entry 0xF contains 0xA002.0xA00 i.e the three first bytes gives us the physical base address of
+the page table being used at the moment.Lets not care about the attribute bits for now.
+Taking another look at our first address from the CPU,we see that the directory field wich is 4 bits in our case is 0xA ,i.e 10 in decimal.
+This means that entry 10 in our page table,the page table being located at address 0xA000 as we saw above,contains the address of the first bytes
+of the page where our information is located.
+Now lets suppose (again!!)that our page table entries have the format below.
+<br><img src="images/example_pte_structure.jpg" alt="page table entry structure"><br>
+In our case we will suppose(again,sorry) that our entry number 10 contains  0xCB1A.
+This means the physical base address of our page being accessed is 0xCB1 or 0x0CB1.
+Our offset into the page in this case,looking again at our cpu address 0xFAAA is 0xAA
+so our physical address the MMU sends to the memory chip is 0xCB1 + 0x00AA = 0x0D5B.
+So the virtual address 0xFAAA "becomes" the physical address 0x0D5B.
+All of this is supposing the page is present in memory,that is the present flag is set.
+If it were not then a pagefault exception would have generated and software would have been invoked to take appropriate
+actions to move the page from the pagefile to main memory.
+Many algorithms out there have been designed for that such as the LRU (Least Recently Used) algorithm.
+</p><br><br>
+<p align="justify">
+My hopes are that this tutorial has not been long and boring and that many people gained something
+when reading this.There are surely mistakes in this document,so don't blame me if your dog reads this
+and still fails his A+ certification exams.
+Thanks to all.
+email :dzouato@yahoo.fr
+</p>
+
+
+</body>
+</html>

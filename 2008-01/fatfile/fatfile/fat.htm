@@ -1,0 +1,320 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=Generator content="Microsoft Word 12 (filtered)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:10.0pt;
+	margin-left:0cm;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
+	{mso-style-link:"Balloon Text Char";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:8.0pt;
+	font-family:"Tahoma","sans-serif";}
+p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:10.0pt;
+	margin-left:36.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoListParagraphCxSpFirst, li.MsoListParagraphCxSpFirst, div.MsoListParagraphCxSpFirst
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:36.0pt;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoListParagraphCxSpMiddle, li.MsoListParagraphCxSpMiddle, div.MsoListParagraphCxSpMiddle
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:36.0pt;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoListParagraphCxSpLast, li.MsoListParagraphCxSpLast, div.MsoListParagraphCxSpLast
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:10.0pt;
+	margin-left:36.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+span.BalloonTextChar
+	{mso-style-name:"Balloon Text Char";
+	mso-style-link:"Balloon Text";
+	font-family:"Tahoma","sans-serif";}
+@page Section1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 72.0pt 72.0pt 72.0pt;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+ ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+-->
+</style>
+
+</head>
+
+<body lang=EN-CA>
+
+<div class=Section1>
+
+<p class=MsoNormal style='text-align:justify'>The FAT filesystem began in
+Stand-Alone Disk BASIC, from Marc MacDonald, with help from Bill Gates. The FAT
+is a very simple filesystem at its core, very suitable for the hobbyist
+operating system developer or for anyone wanting to comprehend a filesystem. </p>
+
+<p class=MsoNormal style='text-align:justify'>Features of FAT12:</p>
+
+<p class=MsoListParagraphCxSpFirst style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>Keeps track of bad blocks</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>2.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>Keeps track of files sizes</p>
+
+<p class=MsoListParagraphCxSpLast style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>3.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>No need to move files around to make place for new files</p>
+
+<p class=MsoNormal style='text-align:justify'>A FAT filesystem has four
+sections:</p>
+
+<p class=MsoListParagraphCxSpFirst style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>The BPB</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>2.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>The FAT table</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>3.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>The root directory</p>
+
+<p class=MsoListParagraphCxSpLast style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>4.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>The cluster area</p>
+
+<p class=MsoNormal style='text-align:justify'>These areas are in this order in
+the FAT, but in this article, to not be fat, we will present the sections in a different
+order, in beginning by the cluster area, using an even/odd order.</p>
+
+<p class=MsoNormal style='text-align:justify'>The cluster area is where each file
+is stored. Files are fragmented into “clusters” which are in the case of
+floppies the same size of the disk sector size, 512 bytes. The data in the
+cluster area is just binary data from the files themselves, nothing more.</p>
+
+<p class=MsoNormal style='text-align:justify'>The FAT keep track of which
+clusters are used by which files in which order, and which clusters are free
+for use for new files. Floppies not being perfect, it also keep track of which
+clusters are bad sectors. The FAT is an array of numbers. For FAT16 for
+example, it’s an array of words, each words pointing to another word in the
+array, the location of the word in the array corresponding to the location of
+the next cluster of the file. For FAT12 it’s harder, because it has 1.5 bytes .
+To get a file from the FAT you need to know the first location of the first FAT
+item of the file. it’s from the root directory.</p>
+
+<p class=MsoNormal style='text-align:justify'>The root directory is a list of
+properties, the properties being names, sizes, and attributes for the files at
+the root of the floppy. One important property of a file in the root directory
+is where is the first FAT entry. From there you can parse the entire file
+clusters.</p>
+
+<p class=MsoNormal style='text-align:justify'>The BPB is the most complicated
+of all. And it is only 512 bytes long! That’s because it is also, often a
+bootloader. It begin by a set of values describing the filesystem, after that
+it shows an error message if booted from. But we want something else. We want
+it to load a binary machine code file from the floppy and execute it, yes?</p>
+
+<p class=MsoNormal style='text-align:justify'>So...</p>
+
+<p class=MsoNormal style='text-align:justify'>The steps to accomplish that are
+theses...</p>
+
+<p class=MsoListParagraphCxSpFirst style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>set ds</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>2.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>set the stack</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>3.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>load the fat,                                it is at 0x7c00+512 and is
+9 sectors long</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>4.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>load the root directory,         it is after the fat, but there are 2
+fats, the first, and a second redundant one! also, each directory entry is 32
+bytes long and the root directory has 224 entries</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>5.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>find your file</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>6.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>get file cluster, from dir entry + 0x1a</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>7.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>parse clusters, don’t forget to add 31 to your clusters numbers, because
+the data area is after the FAT area and the root directory and the first sector
+that is the bpb, which give 33, but Microsoft make unavailable the first two
+clusters numbers so they add 2 to each cluster numbers that are valid, and you
+need to remove 2 from 33 because of that, silly</p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>8.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>having copied your file? jump to it!</p>
+
+<p class=MsoListParagraphCxSpLast style='margin-left:54.0pt;text-align:justify;
+text-indent:-18.0pt'>9.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>else, error</p>
+
+<p class=MsoNormal style='text-align:justify'>The FAT filesystem in details:</p>
+
+<p class=MsoNormal style='text-align:justify'><img width=511 height=511
+id="Picture 2" src="fat_files/image001.png" alt=fatimage.png></p>
+
+<p class=MsoNormal style='text-align:justify'>The BPB is loaded at boot time;
+it’s the famous sector that’s blessed with the 0xaa55 signature. The FAT table
+is located at sector 2 head 0 cylinder 0, and is the same as the second FAT,
+which is redundant. </p>
+
+<p class=MsoNormal style='text-align:justify'>The BPB is in fact 512 bytes of
+machine code. So, the sector starts with a jump instruction to the start of the
+code. Immediately after the jump instruction comes the BPB proper:</p>
+
+<p class=MsoNormal style='text-align:justify'>00h: jmp start</p>
+
+<p class=MsoNormal style='text-align:justify'>03h:oem name, 8 bytes characters,
+may be “MSWIN4.1” for compatibility, but is often something else</p>
+
+<p class=MsoNormal style='text-align:justify'>0Bh:bytes per sector:for our
+floppy, 512 bytes, an 1:1 map with the physical sector size</p>
+
+<p class=MsoNormal style='text-align:justify'>0Dh:sectors per allocation
+unit:how much sector for each cluster from the FAT table, we want 1 as value
+here</p>
+
+<p class=MsoNormal style='text-align:justify'>0Eh:reserved sectors, this is
+this sector, set to 1</p>
+
+<p class=MsoNormal style='text-align:justify'>10h:number of fats, we have 2</p>
+
+<p class=MsoNormal style='text-align:justify'>11h:number of root directory
+entries, there’s 224 entries in a 1440kb 3.5 inch floppy normally formated</p>
+
+<p class=MsoNormal style='text-align:justify'>13h:total sector in logical
+volume, number of sectors, 1440 * 2, because 512 * 2 = 1024 so the correct
+value here is 2880</p>
+
+<p class=MsoNormal style='text-align:justify'>15h:media descriptor byte, some
+values can go here, the correct one for the aforementioned floppy is 0f0h</p>
+
+<p class=MsoNormal style='text-align:justify'>16h:number of sectors per fat, the
+number of clusters on the file divided by 512 must not give a rest, the correct
+value here for a floppy is 9</p>
+
+<p class=MsoNormal style='text-align:justify'>18h:sectors per track, it’s a
+media description, the value for the floppy is 18</p>
+
+<p class=MsoNormal style='text-align:justify'>1ah:number of heads, it’s a media
+description too, the value for the floppy, again, is 2</p>
+
+<p class=MsoNormal style='text-align:justify'>1ch:number of hidden sectors,
+there aren’t any, put 0 here</p>
+
+<p class=MsoNormal style='text-align:justify'>1eh:the code, and...</p>
+
+<p class=MsoNormal style='text-align:justify'>510h:0xAA55!</p>
+
+<p class=MsoNormal style='text-align:justify'>And now, the FAT itself... </p>
+
+<p class=MsoNormal style='text-align:justify'><img width=559 height=168
+id="Picture 0" src="fat_files/image002.png" alt=fat2.png></p>
+
+<p class=MsoNormal style='text-align:justify'>BPB + FATs + root directory = 33
+sectors. So adding to it the cluster value gives you the sector to get? No! The
+first two clusters values in the FAT aren’t used for determining the clusters
+place in the cluster area, that means that for each cluster value you get, you
+need to remove two, before computing your sector on disk to get. The first valid
+cluster is at value 002h, but 33 sectors + 002h = 35 sectors? Yes! you need to
+remove the two first values, cluster emplacements 0 and 1 are unused, because
+Microsoft needed cluster values to determine free cluster, and the other,
+unused code, 001h, I don’t know what it is. So you get 33 + 002h = 35, you get
+sector 35 on disk? But you waste the space of two sectors! That’s why you need
+to remove 2 from each cluster number before seeking the sector on disk.</p>
+
+<p class=MsoNormal style='text-align:justify'>The FAT is simple, each cluster
+number get to the next cluster which is the next chunk of  “sectors per
+allocation unit” of our file. The emplacements of the clusters in the FAT
+determine the location of the sectors on disk. </p>
+
+<p class=MsoNormal style='text-align:justify'>And in terminating, given a
+cluster number, how to get another cluster number? You need to get only 12 bits
+from an array in an architecture that count only in 8, 16, or 32 bits. So, for
+example, given you have cluster 004h, that you need to get value at cluster
+number 004h, you first...</p>
+
+<p class=MsoListParagraphCxSpFirst style='text-align:justify;text-indent:-18.0pt'>1.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>add
+004h to the FAT addres, because there’s 12 bits involved, and not 8, you now
+need to add .5 byte, so...</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-align:justify;text-indent:-18.0pt'>2.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>shift
+right 1 bit, and add again to the address of the FAT</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-align:justify;text-indent:-18.0pt'>3.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>the
+data at location pointed by the address of the FAT is your new cluster, but...</p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-align:justify;text-indent:-18.0pt'>4.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>if
+the cluster number had &amp;001 != 0 then you need to shift right four bits the
+new cluster number because the new value was misaligned (normal, 12 bits + 12
+bits != 32 bits).</p>
+
+<p class=MsoListParagraphCxSpLast style='text-align:justify;text-indent:-18.0pt'>5.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>And
+at last, please AND your new cluster number with the 0xfff mask!</p>
+
+</div>
+
+</body>
+
+</html>
